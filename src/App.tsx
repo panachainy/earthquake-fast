@@ -4,16 +4,16 @@ import { LogsProvider } from '@/providers/Logs'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import ErrorPage from './core/Error'
 import { MainLayout } from './layouts/Main'
-import Example from './pages/Example/Example'
 import PokemonPage from './pages/Pokemon/Index'
 import ZodExample from './pages/Zod/Index'
+import Home from './pages/Home/Index'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
       <MainLayout>
-        <Example />
+        <Home />
       </MainLayout>
     ),
     errorElement: <ErrorPage />,
