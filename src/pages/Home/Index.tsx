@@ -1,36 +1,37 @@
-const people = [
-  {
-    name: 'Calvin Hawkins',
-    email: 'calvin.hawkins@example.com',
-    image:
-      'https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Kristen Ramos',
-    email: 'kristen.ramos@example.com',
-    image:
-      'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Ted Fox',
-    email: 'ted.fox@example.com',
-    image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-]
+import { useEffect, useState } from 'react'
 
 export default function Home() {
-  return (
-    <ul className="divide-y divide-gray-200">
-      {people.map((person) => (
-        <li key={person.email} className="flex py-4">
-          <img className="size-10 rounded-full" src={person.image} alt="" />
-          <div className="ml-3">
-            <p className="font-medium text-gray-900 text-sm">{person.name}</p>
-            <p className="text-gray-500 text-sm">{person.email}</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  )
+  const [people, setPeople] = useState<
+    Array<{ name: string; email: string; image: string }>
+  >([])
+
+  useEffect(() => {
+    async function fetchRSS() {
+      try {
+        // FIXME: ติด cors origin.
+        const response = await fetch(
+          'https://earthquake.tmd.go.th/feed/rss_tmd.xml',
+        )
+        const text = await response.text()
+        console.log(text)
+        const parser = new DOMParser()
+        const xmlDoc = parser.parseFromString(text, 'text/xml')
+        const items = xmlDoc.querySelectorAll('item')
+
+        const parsedItems = Array.from(items).map((item) => ({
+          name: item.querySelector('title')?.textContent || '',
+          email: item.querySelector('description')?.textContent || '',
+          image: item.querySelector('enclosure')?.getAttribute('url') || '',
+        }))
+
+        setPeople(parsedItems)
+      } catch (error) {
+        console.error('Error fetching RSS:', error)
+      }
+    }
+
+    fetchRSS()
+  }, [])
+
+  return <div>2</div>
 }
